@@ -84,40 +84,70 @@ function reasonText(reason) {
   }
 }
 
+const FETCH_TIMEOUT_MS = 90_000;
+
+async function ensureDeviceReady() {
+  if (!deviceId) await loadAccount();
+}
+
+/** Free Render sleeps after idle — first hit can take ~30–90s. */
+async function wakeServer() {
+  try {
+    await fetch(`${ACCOUNTS_API_BASE}/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+  } catch (_) { /* cold-start or offline — auth call will surface the error */ }
+}
+
 async function postJson(path, body) {
   const res = await fetch(`${ACCOUNTS_API_BASE}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   const data = await res.json().catch(() => ({}));
   return { ok: res.ok && data.ok, data };
 }
 
+function networkErrorReason(err) {
+  if (err && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+    return 'Server took too long (free hosting may be waking up). Open the server URL in a tab, wait ~30s, then try again.';
+  }
+  return 'Could not reach the accounts server. Free hosting may be asleep — open the server URL in a browser tab first, wait until it loads, then try again.';
+}
+
 async function registerAccount(username, password, email) {
   try {
+    await ensureDeviceReady();
+    await wakeServer();
     const { ok, data } = await postJson('/api/register', { username, password, email });
     return ok ? { ok: true, message: data.message } : { ok: false, reason: data.reason || reasonText() };
-  } catch (_) {
-    return { ok: false, reason: 'Could not reach the accounts server' };
+  } catch (err) {
+    return { ok: false, reason: networkErrorReason(err) };
   }
 }
 
 async function startTrial(username, password, email) {
   try {
+    await ensureDeviceReady();
+    await wakeServer();
     const { ok, data } = await postJson('/api/trial', { username, password, email, deviceId });
     if (!ok) return { ok: false, reason: data.reason || reasonText() };
     account = { username, token: data.token, status: 'active', plan: data.plan, expiresAt: data.expiresAt, lastError: null, lastCheckedAt: new Date().toISOString() };
     persistAccount();
     broadcastAccount();
     return { ok: true };
-  } catch (_) {
-    return { ok: false, reason: 'Could not reach the accounts server' };
+  } catch (err) {
+    return { ok: false, reason: networkErrorReason(err) };
   }
 }
 
 async function login(username, password) {
   try {
+    await ensureDeviceReady();
+    await wakeServer();
     const { ok, data } = await postJson('/api/login', { username, password, deviceId });
     if (!ok) {
       account = { username, token: null, status: 'unknown', plan: null, expiresAt: null, lastError: reasonText(data.reason), lastCheckedAt: new Date().toISOString() };
@@ -129,8 +159,8 @@ async function login(username, password) {
     persistAccount();
     broadcastAccount();
     return { ok: true };
-  } catch (_) {
-    return { ok: false, reason: 'Could not reach the accounts server' };
+  } catch (err) {
+    return { ok: false, reason: networkErrorReason(err) };
   }
 }
 
@@ -485,7 +515,10 @@ chrome.runtime.onConnect.addListener((port) => {
       }
     });
     load().then(broadcast);
-    loadAccount().then(() => { broadcastAccount(); revalidateAccount(); });
+    loadAccount().then(() => {
+      broadcastAccount();
+      wakeServer().then(revalidateAccount);
+    });
   }
 });
 

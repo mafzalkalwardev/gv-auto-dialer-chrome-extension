@@ -17,6 +17,9 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost')
     ? { rejectUnauthorized: false }
     : false,
+  // Free Render Postgres can suspend; fail the request instead of hanging forever.
+  connectionTimeoutMillis: 30_000,
+  idleTimeoutMillis: 10_000,
 });
 
 async function init() {
