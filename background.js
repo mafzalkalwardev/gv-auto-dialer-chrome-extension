@@ -267,13 +267,15 @@ function pushHud(v) {
     contentPort.postMessage({
       type: 'HUD_UPDATE',
       payload: {
-        visible: state.status !== 'idle',
+        visible: state.status !== 'idle' && state.status !== 'finished',
         name: v.current?.name || '—',
         number: v.current?.pretty || '',
         index: v.position,
         total: v.stats.total,
         percent: v.stats.percent,
         status: state.lastStatusText,
+        awaitingOutcome: state.status === 'awaiting_outcome',
+        inCall: state.status === 'running' && !!v.current && v.current.status === 'dialing',
       },
     });
   } catch (_) {}
@@ -394,15 +396,22 @@ function onContentMessage({ type, payload }) {
     case 'STOP_REQUESTED':
       stopCampaign();
       break;
+
+    case 'OUTCOME_SELECTED':
+      recordOutcome(payload?.result);
+      break;
   }
 }
 
 function recordOutcome(result) {
+  if (state.status !== 'awaiting_outcome') return;
   const contact = state.index >= 0 ? state.contacts[state.index] : null;
-  if (!contact) return;
+  if (!contact || !result) return;
   contact.result = result;
   contact.status = 'completed';
-  if (contact.durationSeconds === null) contact.durationSeconds = 0;
+  if (contact.durationSeconds === null || contact.durationSeconds === undefined) {
+    contact.durationSeconds = 0;
+  }
   if (!contact.endedAt) contact.endedAt = new Date().toISOString();
 
   commit({ status: 'running' }, `Marked ${result}`);
@@ -496,7 +505,7 @@ chrome.runtime.onConnect.addListener((port) => {
           break;
         }
         case 'OUTCOME':
-          recordOutcome(msg.payload.result);
+          recordOutcome(msg.payload?.result);
           break;
         case 'HANGUP':
           toContent('HANGUP');

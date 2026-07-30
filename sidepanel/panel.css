@@ -314,6 +314,9 @@ html, body {
   gap: 6px;
   margin-bottom: 10px;
 }
+.grid3.is-awaiting .btn--chip:not(:disabled) {
+  box-shadow: 0 0 0 1px var(--ok);
+}
 
 /* ---------- live call ---------- */
 

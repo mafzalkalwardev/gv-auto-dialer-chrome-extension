@@ -165,7 +165,17 @@ $('resetBtn').onclick = () => {
 
 document.getElementById('outcomeGrid').addEventListener('click', (e) => {
   const btn = e.target.closest('[data-outcome]');
-  if (btn) send('OUTCOME', { result: btn.dataset.outcome });
+  if (!btn) return;
+  e.preventDefault();
+  if (snapshot?.status !== 'awaiting_outcome') {
+    $('statusLine').textContent = 'Wait for the call to end, then select an outcome.';
+    return;
+  }
+  const result = btn.getAttribute('data-outcome');
+  if (!result) return;
+  $('statusLine').textContent = `Saving ${result}…`;
+  for (const b of document.querySelectorAll('#outcomeGrid [data-outcome]')) b.disabled = true;
+  send('OUTCOME', { result });
 });
 
 $('downloadBtn').onclick = () => {
@@ -220,8 +230,12 @@ function render(v) {
 
     // Outcome buttons only matter once the call is over.
     const awaiting = status === 'awaiting_outcome';
-    for (const b of document.querySelectorAll('[data-outcome]')) b.disabled = !awaiting;
+    for (const b of document.querySelectorAll('#outcomeGrid [data-outcome]')) {
+      b.disabled = !awaiting;
+      b.setAttribute('aria-disabled', awaiting ? 'false' : 'true');
+    }
     $('hangupBtn').disabled = awaiting;
+    $('outcomeGrid').classList.toggle('is-awaiting', awaiting);
 
     // Surface a compliance warning without blocking the operator.
     if (v.enforceCallingWindow && current.e164) {

@@ -20,6 +20,8 @@
   let callState = 'idle';         // idle | dialing | connected | ended
   let callStartedAt = null;
   let lastSeenTimer = null;
+  let sawLiveCall = false;         // true once hangup UI has appeared
+  const DIAL_UI_GRACE_MS = 4000;   // hangup control can lag after click
 
   /* ================= messaging ================= */
 
@@ -92,6 +94,8 @@
     btn.click();
     callState = 'dialing';
     callStartedAt = Date.now();
+    sawLiveCall = false;
+    lastSeenTimer = null;
     send('CALL_STARTED', { number, at: new Date().toISOString() });
     startWatching();
   }
@@ -128,6 +132,7 @@
     const live = !!GVSel.find('hangupButton');
     const secs = readTimer();
     if (secs !== null) lastSeenTimer = secs;
+    if (live) sawLiveCall = true;
 
     if (live && callState === 'dialing') {
       callState = 'connected';
@@ -136,13 +141,33 @@
 
     if (live) {
       send('CALL_TICK', { seconds: secs ?? Math.round((Date.now() - callStartedAt) / 1000) });
+      return;
     }
 
-    if (!live && (callState === 'dialing' || callState === 'connected')) {
+    // Hangup control is missing. Do not treat as "ended" until we've either
+    // seen a live call UI, or waited out the post-dial grace window.
+    if (callState === 'dialing') {
+      if (!sawLiveCall && Date.now() - callStartedAt < DIAL_UI_GRACE_MS) return;
+      const duration = lastSeenTimer ?? Math.round((Date.now() - callStartedAt) / 1000);
+      const hadLive = sawLiveCall;
+      callState = 'ended';
+      stopWatching();
+      lastSeenTimer = null;
+      sawLiveCall = false;
+      if (!hadLive) {
+        send('DIAL_FAILED', { reason: 'Call UI did not appear — check Google Voice selectors' });
+      } else {
+        send('CALL_ENDED', { durationSeconds: duration, at: new Date().toISOString() });
+      }
+      return;
+    }
+
+    if (callState === 'connected') {
       const duration = lastSeenTimer ?? Math.round((Date.now() - callStartedAt) / 1000);
       callState = 'ended';
       stopWatching();
       lastSeenTimer = null;
+      sawLiveCall = false;
       send('CALL_ENDED', { durationSeconds: duration, at: new Date().toISOString() });
     }
   }
@@ -169,6 +194,20 @@
         <div class="gvad-hud__label">Queue progress</div>
         <div class="gvad-hud__track"><i data-hud="bar"></i></div>
         <div class="gvad-hud__status" data-hud="status">Idle</div>
+        <div class="gvad-hud__outcomes" data-hud="outcomes" hidden>
+          <div class="gvad-hud__label">Select outcome</div>
+          <div class="gvad-hud__grid">
+            <button type="button" data-outcome="Answered">Answered</button>
+            <button type="button" data-outcome="Voicemail">Voicemail</button>
+            <button type="button" data-outcome="Busy">Busy</button>
+            <button type="button" data-outcome="No Answer">No answer</button>
+            <button type="button" data-outcome="Wrong Number">Wrong no.</button>
+            <button type="button" data-outcome="Disconnected">Disconn.</button>
+            <button type="button" data-outcome="Callback">Callback</button>
+            <button type="button" class="is-ok" data-outcome="Interested">Interested</button>
+            <button type="button" class="is-bad" data-outcome="Not Interested">Not int.</button>
+          </div>
+        </div>
         <div class="gvad-hud__actions">
           <button type="button" data-hud-action="hangup">End call</button>
           <button type="button" class="is-danger" data-hud-action="stop">Stop dialing</button>
@@ -178,10 +217,15 @@
 
     hud.querySelector('[data-hud-action="hangup"]').onclick = hangup;
     hud.querySelector('[data-hud-action="stop"]').onclick = () => send('STOP_REQUESTED');
+    hud.querySelector('.gvad-hud__grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-outcome]');
+      if (!btn || btn.disabled) return;
+      send('OUTCOME_SELECTED', { result: btn.getAttribute('data-outcome') });
+    });
     makeDraggable(hud, hud.querySelector('.gvad-hud__bar'));
   }
 
-  function renderHud({ name, number, index, total, status, percent, visible }) {
+  function renderHud({ name, number, index, total, status, percent, visible, awaitingOutcome, inCall }) {
     if (!hud) buildHud();
     hud.style.display = visible === false ? 'none' : 'block';
     const set = (k, v) => {
@@ -194,6 +238,17 @@
     set('status', status || '');
     const bar = hud.querySelector('[data-hud="bar"]');
     if (bar && percent !== undefined) bar.style.width = `${percent}%`;
+
+    const outcomes = hud.querySelector('[data-hud="outcomes"]');
+    if (outcomes) outcomes.hidden = !awaitingOutcome;
+    hud.classList.toggle('is-awaiting', !!awaitingOutcome);
+
+    const hangupBtn = hud.querySelector('[data-hud-action="hangup"]');
+    if (hangupBtn) hangupBtn.disabled = !!awaitingOutcome || !inCall;
+
+    for (const b of hud.querySelectorAll('[data-outcome]')) {
+      b.disabled = !awaitingOutcome;
+    }
   }
 
   function makeDraggable(el, handle) {
