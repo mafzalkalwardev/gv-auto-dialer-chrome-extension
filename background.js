@@ -90,14 +90,14 @@ async function ensureDeviceReady() {
   if (!deviceId) await loadAccount();
 }
 
-/** Free Render sleeps after idle — first hit can take ~30–90s. */
+/** Warm the API before auth so the first request is less likely to time out. */
 async function wakeServer() {
   try {
     await fetch(`${ACCOUNTS_API_BASE}/health`, {
       method: 'GET',
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
-  } catch (_) { /* cold-start or offline — auth call will surface the error */ }
+  } catch (_) { /* offline — auth call will surface the error */ }
 }
 
 async function postJson(path, body) {
@@ -113,9 +113,9 @@ async function postJson(path, body) {
 
 function networkErrorReason(err) {
   if (err && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
-    return 'Server took too long (free hosting may be waking up). Open the server URL in a tab, wait ~30s, then try again.';
+    return 'The server is taking too long to respond. Please try again in a moment.';
   }
-  return 'Could not reach the accounts server. Free hosting may be asleep — open the server URL in a browser tab first, wait until it loads, then try again.';
+  return 'Could not reach the server. Check your internet connection and try again.';
 }
 
 async function registerAccount(username, password, email) {

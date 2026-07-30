@@ -50,14 +50,12 @@ $('authToggle').onclick = () => {
     : 'New here? Register and wait for approval, or start a free trial.';
 };
 
-const AUTH_WAIT_HINT = 'Contacting server… Free hosting can take up to a minute to wake — please wait.';
-
 $('loginBtn').onclick = () => {
   const username = $('loginUsername').value.trim();
   const password = $('loginPassword').value;
   if (!username || !password) { $('authStatus').textContent = 'Enter your username and password.'; return; }
   setAuthBusy(true);
-  $('authStatus').textContent = AUTH_WAIT_HINT;
+  $('authStatus').textContent = 'Signing you in… please wait.';
   send('LOGIN', { username, password });
 };
 
@@ -67,7 +65,7 @@ $('registerBtn').onclick = () => {
   const password = $('regPassword').value;
   if (!username || password.length < 6) { $('authStatus').textContent = 'Choose a username and a password of at least 6 characters.'; return; }
   setAuthBusy(true);
-  $('authStatus').textContent = AUTH_WAIT_HINT;
+  $('authStatus').textContent = 'Creating your account… please wait.';
   send('REGISTER', { username, email, password });
 };
 
@@ -77,7 +75,7 @@ $('trialBtn').onclick = () => {
   const password = $('regPassword').value;
   if (!username || password.length < 6) { $('authStatus').textContent = 'Choose a username and a password of at least 6 characters, then start the trial.'; return; }
   setAuthBusy(true);
-  $('authStatus').textContent = AUTH_WAIT_HINT;
+  $('authStatus').textContent = 'Starting your trial… please wait.';
   send('START_TRIAL', { username, email, password });
 };
 
