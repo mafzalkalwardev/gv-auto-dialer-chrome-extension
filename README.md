@@ -1,61 +1,96 @@
 # Google Voice Enterprise Auto Dialer
 
-A Chrome MV3 extension that turns Google Voice into a queue-based outbound dialer.
-Import a lead list, auto-dial with a configurable gap, tag each outcome, export an XLSX report.
+Chrome MV3 extension that turns [Google Voice](https://voice.google.com) into a **queue-based outbound dialer**: import leads, auto-dial with a delay, tag outcomes, export an XLSX call report. Includes a **subscription gate** (trial + admin-approved plans) with **one device per account**.
 
-No build step. No bundler. Clone, load unpacked, iterate.
+**Live accounts API:** [https://gv-auto-dialer-accounts.vercel.app](https://gv-auto-dialer-accounts.vercel.app)  
+**Admin:** [https://gv-auto-dialer-accounts.vercel.app/admin](https://gv-auto-dialer-accounts.vercel.app/admin)  
+**Privacy policy:** [https://gv-auto-dialer-accounts.vercel.app/privacy](https://gv-auto-dialer-accounts.vercel.app/privacy)
+
+No build step. No bundler. Load unpacked to develop, or publish to the Chrome Web Store for clients.
 
 ---
 
-## Install
+## Features
+
+- Import contacts from `.csv` / `.xlsx` / `.xls`
+- Auto-dial queue with configurable gap between calls
+- On-page HUD on Google Voice + side panel controls
+- Manual outcome tagging and XLSX call reports
+- Free 1-hour trial, register → pending → admin activate
+- Plans: 1 day / 1 week / 15 days / 1 month / 1 year
+- One active device per account (logout or admin reset to move)
+
+---
+
+## Install (developers)
 
 1. `chrome://extensions` → enable **Developer mode**
-2. **Load unpacked** → select this folder
+2. **Load unpacked** → select this folder (the one that contains `manifest.json`)
 3. Open `https://voice.google.com/u/0/calls`
 4. Click the extension icon to open the side panel
+5. **Start free 1-hour trial** or log in with an approved account
 
-## First run
+## Install (clients)
+
+Once published: search the [Chrome Web Store](https://chrome.google.com/webstore) for **Google Voice Enterprise Auto Dialer**, click **Add to Chrome**, then open Google Voice and use the side panel.
+
+Until then, send them this repo / a zip of the extension files (not including `server/`) and the Load unpacked steps above.
+
+---
+
+## Publish to the Chrome Web Store
+
+Yes — this extension is ready to submit. Full checklist: **[PUBLISHING.md](./PUBLISHING.md)**. Short version:
+
+1. Create a [Chrome Web Store developer account](https://chrome.google.com/webstore/devconsole) ($5 one-time fee).
+2. Zip the extension **contents** (so `manifest.json` is at the zip root). **Exclude** `server/`, `test/`, `.git`, docs.
+3. Dashboard → **New item** → upload zip.
+4. Fill store listing, screenshots, privacy practices, and set privacy policy URL to:  
+   `https://gv-auto-dialer-accounts.vercel.app/privacy`
+5. Visibility: **Public** (searchable) or **Unlisted** (link-only).
+6. Submit for review (hours to a few days).
+
+**Honest risk:** the extension automates Google Voice’s web UI. Google may scrutinize or reject the listing, and heavy automated dialing can risk the user’s Google account. State that clearly to clients. Fallback: Unlisted listing or private Load-unpacked distribution.
+
+After approval, bump `version` in `manifest.json`, re-zip, upload a new package — installs update automatically.
+
+---
+
+## Accounts server (already deployed)
+
+Hosted free on **Vercel** + **Neon Postgres** (permanent free tiers; may cold-start after idle).
+
+| Item | Value |
+|------|--------|
+| API base | `https://gv-auto-dialer-accounts.vercel.app` |
+| Admin | `/admin` (Basic auth via `ADMIN_USER` / `ADMIN_PASSWORD` in Vercel env) |
+| Extension config | [`config.js`](./config.js) → `ACCOUNTS_API_BASE` |
+| Host permission | [`manifest.json`](./manifest.json) |
+
+Local / redeploy notes: [`server/README.md`](./server/README.md). Source of truth for production is the Vercel project `gv-auto-dialer-accounts`.
+
+---
+
+## First run (dialing)
 
 ```
 Upload contacts  →  sample-leads.csv
 ```
 
-The importer accepts `.csv`, `.xlsx`, `.xls`. Column headers are matched
-case- and spacing-insensitively, so all of these work:
+Column headers are matched case- and spacing-insensitively:
 
 | Accepted for the number | Accepted for the name |
 |---|---|
 | `Phone Number`, `phone`, `number`, `mobile`, `cell`, `phone_number` | `Customer Name`, `name`, `contact`, `full name`, `customer` |
 
-## Report output
+### Report output
 
-`Download report (.xlsx)` produces exactly these columns:
+`Download report (.xlsx)` columns:
 
 ```
 Sr.No. | Phone Number | Customer Name | Call Status | Call Result |
 Call Duration | Call Start Time | Call End Time
 ```
-
----
-
-## ⚠️ The one thing that will break: selectors
-
-Google ships obfuscated, frequently-rotated class names. **Every** DOM
-assumption is quarantined in `content/selectors.js` — nothing else in the
-codebase touches the Google Voice DOM.
-
-When dialing stops working, open DevTools on `voice.google.com` and run:
-
-```js
-GVSel.probe()
-```
-
-You get a table of which selectors currently resolve. Repair only the failing
-key by adding a new candidate to `CANDIDATES` in `selectors.js`. Anchor on
-`aria-label`, `role`, `placeholder`, or visible text — **never** on a class.
-
-Because the candidates are tried in order, adding a new one at the top is
-non-destructive: old sites keep working via the later fallbacks.
 
 ---
 
@@ -70,115 +105,58 @@ non-destructive: old sites keep working via the later fallbacks.
                                         ┌────────▼─────────┐
                                         │  Content script  │
                                         │  on voice.google │
-                                        │  · drives dialpad│
-                                        │  · reads state   │
-                                        │  · renders HUD   │
                                         └──────────────────┘
 ```
 
-**Three rules this design enforces:**
+Accounts API (Vercel) authenticates the extension; campaign state lives in `chrome.storage.local`.
 
-1. **The panel owns nothing.** It renders snapshots and sends intents. Close it
-   mid-campaign and nothing is lost.
-2. **The worker persists on every transition.** MV3 kills service workers after
-   ~30s idle; state is written to `chrome.storage.local` on each `commit()` so a
-   recycled worker resumes correctly. An open panel Port also keeps it alive,
-   which is why inter-call delays can use `setTimeout` — `chrome.alarms` has a
-   30-second floor and is useless for a 5-second gap.
-3. **The dial loop is a state machine, not a `for` loop.** Every advance checks
-   `status === 'running'` first, so Stop takes effect immediately instead of
-   after the queue drains.
+### Selectors (the thing that breaks)
 
-### State machine
+Google rotates obfuscated class names. **All** DOM assumptions live in `content/selectors.js`. When dialing breaks, on `voice.google.com` DevTools run:
 
+```js
+GVSel.probe()
 ```
-idle ──START──► running ──DIAL──► (content: CALL_STARTED)
-                   ▲                        │
-                   │                  CALL_CONNECTED
-                   │                        │
-                   │                   CALL_ENDED
-                   │                        ▼
-              scheduleNext ◄──OUTCOME── awaiting_outcome
-                   │
-              (no ready contacts) ──► finished
-```
+
+Repair only failing keys in `CANDIDATES` — prefer `aria-label` / text, never a class.
 
 ---
 
 ## Testing
 
-Pure logic — normalization, dedupe, calling windows — is unit tested and runs
-without a browser:
-
 ```bash
 npm test
 ```
 
-The DOM automation cannot be unit tested; it requires a real logged-in Google
-Voice session. Verify it manually with `GVSel.probe()` plus a single-contact CSV
-before running a real list.
+DOM automation needs a real logged-in Google Voice session.
 
 ---
 
 ## Guardrails
 
-Two safety features are built in because outbound dialing to US numbers is
-regulated:
+- **Calling window** — flags contacts outside 8am–9pm in the called party’s approximate local time (toggleable).
+- **DNC list** — numbers in `chrome.storage.local.dncList` are dropped at import.
 
-- **Calling window** — contacts are flagged when the *called party's* local time
-  falls outside 8am–9pm, using a coarse NPA→timezone map. Toggleable in the panel.
-- **DNC suppression** — numbers in `chrome.storage.local.dncList` are dropped at
-  import and counted in the summary as *Suppressed*.
-
-Both are engineering conveniences, not legal compliance. TCPA/DNC obligations,
-consent records, and scrubbing against the federal registry remain yours. Note
-also that scripted interaction with Google Voice is not something Google's terms
-contemplate, and accounts doing high-volume automated dialing do get flagged.
+These are conveniences, not legal compliance. TCPA/DNC/consent and Google’s terms remain your responsibility.
 
 ---
-
-## Selling this as a subscription
-
-The extension ships with a device-locked login gate (`config.js`,
-`server/`) that you run entirely by hand — no payment processor.
-Clients register or start a free 1-hour trial from inside the
-extension; you approve them and pick a plan (1 day, 1 week, 15 days,
-1 month, 1 year) from a password-protected admin page after they pay
-you however you like. Each account can only be logged in on one
-computer at a time.
-
-- **`server/`** — the accounts + admin API. Deploy it first; see
-  `server/README.md` for a click-through Render setup, no command line
-  required.
-- **`PUBLISHING.md`** — how to publish this extension publicly on the
-  Chrome Web Store so clients can find it by searching, and how to pass
-  review (privacy policy, permission justifications, single-purpose
-  description).
-
-Do the server first, then point `config.js` and `manifest.json` at it,
-then publish.
 
 ## File map
 
 | File | Responsibility |
 |---|---|
-| `manifest.json` | MV3 config, permissions, side panel registration |
-| `background.js` | Campaign queue, dial state machine, persistence |
-| `content/selectors.js` | **All** Google Voice DOM selectors + `probe()` |
-| `content/inject.js` | Dialpad control, call-state detection, HUD |
-| `content/hud.css` | On-page HUD styling |
-| `sidepanel/panel.js` | View layer — renders snapshots, sends intents |
-| `sidepanel/panel.css` | Design tokens and panel styling |
-| `lib/phone.js` | E.164 normalization, dedupe, calling windows (pure) |
-| `lib/report.js` | Lead file parsing + XLSX report generation |
-| `lib/xlsx.full.min.js` | SheetJS 0.18.5 (vendored) |
-| `config.js` | Points the extension at your deployed accounts server |
-| `server/` | Accounts + admin API — Express + Postgres, no payment processor |
+| `manifest.json` | MV3 config, permissions, side panel |
+| `background.js` | Campaign queue, auth, persistence |
+| `config.js` | Accounts API base URL |
+| `content/selectors.js` | Google Voice DOM selectors + `probe()` |
+| `content/inject.js` | Dialpad, call state, HUD |
+| `sidepanel/` | UI |
+| `lib/` | Phone utils, reports, SheetJS |
+| `server/` | Express + Postgres accounts API (deployed to Vercel) |
+| `PUBLISHING.md` | Chrome Web Store submission guide |
 
 ## Known gaps
 
-- Call-state detection relies on the presence of the hangup button and the
-  on-screen timer. It cannot distinguish *answered by a human* from *answered by
-  voicemail* — that's why outcome tagging is manual, same as the reference.
-- The NPA→timezone table is approximate and DST is estimated by month.
-- Single Google Voice tab only; behaviour with multiple tabs is undefined.
+- Cannot distinguish human answer vs voicemail — outcomes are manual.
+- NPA→timezone map is approximate.
+- Single Google Voice tab only.
