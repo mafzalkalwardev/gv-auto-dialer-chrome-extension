@@ -3,11 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Auto Dialer</title>
+  <title>GV Auto Dialer — Indus Web Agency</title>
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
   <main class="panel">
+
+    <header class="brand" aria-label="Indus Web Agency">
+      <img class="brand__logo" src="../icons/indus-logo.png" alt="Indus Web Agency" width="120" height="77">
+      <div class="brand__text">
+        <p class="brand__agency">Indus Web Agency</p>
+        <h1 class="brand__product">GV Auto Dialer</h1>
+        <p class="brand__tag">Google Voice outbound dialer</p>
+      </div>
+    </header>
 
     <!-- Auth gate: shown until the server confirms an active, approved
          account logged in from this device. Everything else stays
@@ -156,6 +165,16 @@
     <button type="button" class="btn btn--quiet btn--block" id="logoutBtn">Log out (frees this device)</button>
 
     </div>
+
+    <footer class="madeby">
+      <p class="madeby__line">Made by <strong>Indus Web Agency</strong></p>
+      <div class="madeby__links">
+        <a href="https://www.induswebagency.com" target="_blank" rel="noopener noreferrer">Website</a>
+        <span class="madeby__sep" aria-hidden="true">·</span>
+        <a href="https://wa.me/923079670503" target="_blank" rel="noopener noreferrer">WhatsApp support</a>
+      </div>
+      <a class="madeby__phone" href="https://wa.me/923079670503" target="_blank" rel="noopener noreferrer">+92 307 9670503</a>
+    </footer>
   </main>
 
   <!-- SheetJS must be a classic script; it attaches window.XLSX. -->

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Google Voice Enterprise Auto Dialer",
-  "version": "0.1.0",
-  "description": "Queue-based outbound dialer for Google Voice. Import leads, auto-dial with a delay, tag outcomes, export an XLSX call report.",
+  "name": "GV Auto Dialer by Indus Web Agency",
+  "version": "0.2.0",
+  "description": "Google Voice auto dialer by Indus Web Agency — import leads, auto-dial, tag outcomes, export XLSX. Support: WhatsApp +92 307 9670503.",
 
   "permissions": ["sidePanel", "storage", "alarms"],
   "host_permissions": ["https://voice.google.com/*", "https://gv-auto-dialer-accounts.vercel.app/*"],
@@ -17,7 +17,7 @@
   },
 
   "action": {
-    "default_title": "Open Auto Dialer",
+    "default_title": "GV Auto Dialer — Indus Web Agency",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

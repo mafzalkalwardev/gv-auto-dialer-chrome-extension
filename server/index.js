@@ -65,9 +65,9 @@ function reasonText(reason) {
     case 'username_taken': return 'That username is already registered.';
     case 'not_found': return 'Account not found.';
     case 'bad_credentials': return 'Incorrect username or password.';
-    case 'pending': return 'Your account is registered but not approved yet — contact the seller.';
-    case 'disabled': return 'This account has been disabled.';
-    case 'expired': return 'Your subscription has expired — contact the seller to renew.';
+    case 'pending': return 'Your account is registered but not approved yet — WhatsApp Indus Web Agency at +92 307 9670503.';
+    case 'disabled': return 'This account has been disabled. Contact Indus Web Agency on WhatsApp +92 307 9670503.';
+    case 'expired': return 'Your subscription has expired — WhatsApp Indus Web Agency at +92 307 9670503 to renew.';
     case 'device_mismatch': return 'This account is already logged in on another computer. Log out there first.';
     case 'trial_used_on_device': return 'A free trial has already been used on this computer.';
     default: return reason || 'Something went wrong.';
@@ -241,10 +241,13 @@ app.get('/admin', async (req, res) => {
       </tr>`;
   }).join('');
 
-  res.send(`<!doctype html><html><head><meta charset="utf-8"><title>Admin — Auto Dialer accounts</title>
+  res.send(`<!doctype html><html><head><meta charset="utf-8"><title>Admin — Indus Web Agency GV Auto Dialer</title>
     <style>
       body { font-family: system-ui, sans-serif; background: #0b0e19; color: #e8edf7; margin: 0; padding: 24px; }
-      h1 { font-size: 18px; }
+      h1 { font-size: 18px; margin-bottom: 4px; }
+      .brand { color: #1ece80; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; margin: 0 0 4px; }
+      .support { color: #8b98b0; font-size: 12px; margin: 0 0 20px; }
+      .support a { color: #4aa8ff; }
       table { width: 100%; border-collapse: collapse; font-size: 13px; }
       th, td { padding: 8px 10px; border-bottom: 1px solid #2a3648; text-align: left; vertical-align: top; }
       th { color: #8b98b0; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
@@ -257,7 +260,12 @@ app.get('/admin', async (req, res) => {
       .card { background: #0f1528; border: 1px solid #2a3648; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
     </style></head>
     <body>
-      <h1>Auto Dialer — account admin</h1>
+      <p class="brand">Indus Web Agency</p>
+      <h1>GV Auto Dialer — account admin</h1>
+      <p class="support">Support:
+        <a href="https://wa.me/923079670503" target="_blank" rel="noopener">WhatsApp +92 307 9670503</a>
+        · <a href="https://www.induswebagency.com" target="_blank" rel="noopener">induswebagency.com</a>
+      </p>
 
       <div class="card">
         <h2 style="font-size:13px;margin-top:0">Add a user manually</h2>
@@ -329,11 +337,15 @@ app.post('/admin/users/:id/delete', async (req, res) => {
 /* ================= misc ================= */
 
 app.get('/privacy', (req, res) => {
-  res.send(`<!doctype html><html><head><meta charset="utf-8"><title>Privacy Policy</title></head>
-    <body style="font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;color:#1d2739;line-height:1.5">
-      <h1>Privacy Policy — Google Voice Enterprise Auto Dialer</h1>
+  res.send(`<!doctype html><html><head><meta charset="utf-8"><title>Privacy Policy — Indus Web Agency</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></head>
+    <body style="font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;color:#1d2739;line-height:1.5">
+      <p style="margin:0 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#0d6845;font-weight:700">Indus Web Agency</p>
+      <h1 style="margin-top:0">Privacy Policy — GV Auto Dialer</h1>
       <p><em>Last updated: ${new Date().toISOString().slice(0, 10)}</em></p>
-      <p>This extension runs mostly in your browser. Contact lists you upload,
+      <p>This extension is made by <strong>Indus Web Agency</strong>
+      (<a href="https://www.induswebagency.com">induswebagency.com</a>).
+      It runs mostly in your browser. Contact lists you upload,
       call outcomes, and campaign progress are stored locally in Chrome's
       <code>chrome.storage.local</code> on your own device.</p>
       <p>To provide subscription access, the extension sends your chosen
@@ -341,10 +353,12 @@ app.get('/privacy', (req, res) => {
       device identifier to our server, which is used solely to authenticate
       you and enforce one active device per account. We do not sell or
       share this data with third parties.</p>
-      <p>Payment for a subscription is arranged directly with the seller
+      <p>Payment for a subscription is arranged directly with Indus Web Agency
       outside of this extension; no card details are processed by this
       software.</p>
-      <p>Questions: contact the seller you subscribed through.</p>
+      <p><strong>Support / contact:</strong><br>
+      WhatsApp: <a href="https://wa.me/923079670503">+92 307 9670503</a><br>
+      Website: <a href="https://www.induswebagency.com">www.induswebagency.com</a></p>
     </body></html>`);
 });
 

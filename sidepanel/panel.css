@@ -39,6 +39,85 @@ html, body {
   min-height: 100vh;
 }
 
+/* ---------- Indus Web Agency brand ---------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #121a2e 0%, #0f1528 55%, #152238 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.brand__logo {
+  width: 72px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fff;
+  padding: 4px;
+}
+.brand__text { min-width: 0; }
+.brand__agency {
+  margin: 0 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+.brand__product {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--text);
+  line-height: 1.2;
+}
+.brand__tag {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.madeby {
+  margin-top: auto;
+  padding: 14px 10px 6px;
+  text-align: center;
+  border-top: 1px solid var(--line);
+}
+.madeby__line {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.madeby__line strong { color: var(--text); font-weight: 700; }
+.madeby__links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.madeby__links a,
+.madeby__phone {
+  color: var(--info);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+}
+.madeby__links a:hover,
+.madeby__phone:hover { text-decoration: underline; color: #7ec4ff; }
+.madeby__sep { color: var(--dim); }
+.madeby__phone {
+  display: inline-block;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  letter-spacing: .02em;
+}
+
 /* #appBody wraps everything below the license gate; it needs the same
    flex layout as .panel or its children lose their spacing. */
 #appBody {

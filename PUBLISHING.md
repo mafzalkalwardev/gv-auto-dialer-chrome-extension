@@ -43,6 +43,8 @@ $files = 'manifest.json','config.js','background.js','content','icons','lib','si
 Compress-Archive -Path $files -DestinationPath ..\gv-auto-dialer-webstore.zip -Force
 ```
 
+Include the full `icons/` folder (Indus Web Agency logo + Chrome icon sizes).
+
 ## 3. Create the listing
 
 In the Developer Dashboard → **New item** → upload the zip, then fill in:
@@ -50,21 +52,23 @@ In the Developer Dashboard → **New item** → upload the zip, then fill in:
 ### Suggested store description (paste / edit)
 
 ```
-Google Voice Enterprise Auto Dialer is a queue-based outbound dialer for Google Voice.
+GV Auto Dialer by Indus Web Agency — a queue-based outbound dialer for Google Voice.
 
 Import a CSV or Excel lead list, auto-dial contacts with a configurable delay, tag each call outcome, and export an XLSX call report — all from a Chrome side panel while you work in voice.google.com.
 
-Perfect for sales teams, agencies, and solo dialers who already use Google Voice and need a simple call queue without a full dialer suite.
+Made by Indus Web Agency (induswebagency.com). Perfect for sales teams, agencies, and solo dialers who already use Google Voice.
 
 Getting started:
 • Add to Chrome and open Google Voice (voice.google.com)
 • Open the extension side panel
-• Start a free 1-hour trial, or register and wait for seller approval
+• Start a free 1-hour trial, or register and wait for approval
 • Upload leads and start dialing
 
-Access is subscription-based (trial, then plans from 1 day to 1 year). Contact the seller to activate a paid plan after registering. Each account works on one computer at a time.
+Access is subscription-based (trial, then plans from 1 day to 1 year). Contact Indus Web Agency to activate a paid plan. Each account works on one computer at a time.
 
-Keywords: Google Voice auto dialer, outbound call queue, sales dialer, Google Voice dialer, lead calling, call report.
+Support: WhatsApp +92 307 9670503 · https://www.induswebagency.com
+
+Keywords: Google Voice auto dialer, Indus Web Agency, outbound call queue, sales dialer, Google Voice dialer, lead calling, call report.
 ```
 
 ### Other listing fields
