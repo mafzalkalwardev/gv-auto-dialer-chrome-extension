@@ -33,6 +33,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serverless (Vercel) cold starts: create tables on first request, not at listen time.
+let dbReady = null;
+function ensureDb(req, res, next) {
+  if (!dbReady) {
+    dbReady = init().catch((err) => {
+      dbReady = null;
+      throw err;
+    });
+  }
+  dbReady.then(() => next()).catch((err) => {
+    console.error('Database init failed:', err);
+    res.status(503).json({ ok: false, reason: 'Database unavailable. Try again in a moment.' });
+  });
+}
+app.use(ensureDb);
+
 /* ================= helpers ================= */
 
 /** Flip a lapsed row to 'expired' and return the up-to-date status. */
@@ -334,10 +350,18 @@ app.get('/privacy', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
-const port = process.env.PORT || 3000;
-init()
-  .then(() => app.listen(port, () => console.log(`Accounts server listening on ${port}`)))
-  .catch((err) => {
-    console.error('Failed to initialize database:', err);
-    process.exit(1);
-  });
+// Local / Render: listen on a port. Vercel imports this module as a serverless function.
+module.exports = app;
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  init()
+    .then(() => {
+      dbReady = Promise.resolve();
+      app.listen(port, () => console.log(`Accounts server listening on ${port}`));
+    })
+    .catch((err) => {
+      console.error('Failed to initialize database:', err);
+      process.exit(1);
+    });
+}

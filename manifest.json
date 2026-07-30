@@ -5,7 +5,7 @@
   "description": "Queue-based outbound dialer for Google Voice. Import leads, auto-dial with a delay, tag outcomes, export an XLSX call report.",
 
   "permissions": ["sidePanel", "storage", "alarms"],
-  "host_permissions": ["https://voice.google.com/*", "https://gv-auto-dialer-chrome-extension.onrender.com/*"],
+  "host_permissions": ["https://voice.google.com/*", "https://gv-auto-dialer-accounts.vercel.app/*"],
 
   "background": {
     "service_worker": "background.js",

@@ -5,4 +5,4 @@
  * Chrome Web Store.
  * ------------------------------------------------------------------ */
 
-export const ACCOUNTS_API_BASE = 'https://gv-auto-dialer-chrome-extension.onrender.com';
+export const ACCOUNTS_API_BASE = 'https://gv-auto-dialer-accounts.vercel.app';
