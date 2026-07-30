@@ -1,0 +1,86 @@
+/* On-page HUD. Namespaced under #gvad-hud and given a high z-index so
+   Google Voice's own stacking contexts can't bury it. All values are
+   !important-free — we never fight the host page, we just sit above it. */
+
+#gvad-hud {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2147483000;
+  width: 300px;
+  display: none;
+  font-family: "Google Sans", Roboto, system-ui, sans-serif;
+  color: #e8edf7;
+  background: #0b0e19;
+  border: 1px solid #1d2739;
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .45);
+  overflow: hidden;
+}
+
+#gvad-hud .gvad-hud__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #0f1528;
+  border-bottom: 1px solid #1d2739;
+  user-select: none;
+}
+
+#gvad-hud .gvad-hud__grip { color: #4b5871; font-size: 13px; letter-spacing: -2px; }
+#gvad-hud .gvad-hud__title { font-size: 13px; font-weight: 600; color: #4aa8ff; flex: 1; }
+#gvad-hud .gvad-hud__count {
+  font-size: 11px; color: #9aa6bd;
+  background: #1d2739; padding: 2px 8px; border-radius: 999px;
+}
+
+#gvad-hud .gvad-hud__body { padding: 12px; }
+
+#gvad-hud .gvad-hud__label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .08em;
+  color: #6b7894; margin: 10px 0 4px;
+}
+#gvad-hud .gvad-hud__label:first-child { margin-top: 0; }
+
+#gvad-hud .gvad-hud__name { font-size: 15px; font-weight: 700; color: #fff; }
+#gvad-hud .gvad-hud__num {
+  font-size: 13px; color: #4aa8ff;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+}
+
+#gvad-hud .gvad-hud__track {
+  height: 5px; background: #1d2739; border-radius: 999px; overflow: hidden;
+}
+#gvad-hud .gvad-hud__track i {
+  display: block; height: 100%; width: 0;
+  background: #1ece80; transition: width .3s ease;
+}
+
+#gvad-hud .gvad-hud__status {
+  margin-top: 10px; padding: 8px 10px;
+  background: #0f1528; border-left: 3px solid #4aa8ff; border-radius: 4px;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 11px; color: #9fd0ff;
+  min-height: 16px; word-break: break-word;
+}
+
+#gvad-hud .gvad-hud__actions { display: flex; gap: 8px; margin-top: 12px; }
+#gvad-hud .gvad-hud__actions button {
+  flex: 1; padding: 9px 0; cursor: pointer;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  color: #e8edf7; background: #1d2739;
+  border: 1px solid #2a3648; border-radius: 6px;
+}
+#gvad-hud .gvad-hud__actions button:hover { background: #253044; }
+#gvad-hud .gvad-hud__actions button.is-danger {
+  background: #cb1127; border-color: #cb1127; color: #fff;
+}
+#gvad-hud .gvad-hud__actions button.is-danger:hover { background: #a80e20; }
+#gvad-hud .gvad-hud__actions button:focus-visible {
+  outline: 2px solid #1ece80; outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gvad-hud .gvad-hud__track i { transition: none; }
+}

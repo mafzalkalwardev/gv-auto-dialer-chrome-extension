@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "name": "gv-auto-dialer",
+  "private": true,
+  "scripts": { "test": "node --test test/*.test.js" }
+}

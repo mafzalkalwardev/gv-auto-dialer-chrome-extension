@@ -1,0 +1,17 @@
+{
+  "name": "gv-auto-dialer-accounts-server",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Accounts + admin API for the Google Voice Enterprise Auto Dialer extension. You approve users and set their subscription length by hand from /admin; no payment processor is involved.",
+  "type": "commonjs",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  }
+}

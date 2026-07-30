@@ -1,0 +1,293 @@
+/* Tokens sampled directly from the reference recording. */
+:root {
+  --bg:        #0b0e19;
+  --surface:   #0f1528;
+  --card:      #1d2739;
+  --line:      #2a3648;
+  --text:      #e8edf7;
+  --muted:     #8b98b0;
+  --dim:       #6b7894;
+
+  --ok:        #1ece80;
+  --ok-deep:   #0d6845;
+  --bad:       #cb1127;
+  --bad-deep:  #76121d;
+  --warn:      #f0a92e;
+  --info:      #4aa8ff;
+  --vm:        #b57af3;
+
+  --radius:    10px;
+  --gap:       12px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Google Sans", Roboto, system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+  min-height: 100vh;
+}
+
+/* #appBody wraps everything below the license gate; it needs the same
+   flex layout as .panel or its children lose their spacing. */
+#appBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.card--accent { border-color: var(--ok); }
+.card--live   { border-color: var(--info); }
+.card--done   { border-color: var(--ok); }
+
+.card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.card__head h2 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--info);
+}
+.card__meta {
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.card__close {
+  background: none; border: 0; cursor: pointer;
+  color: var(--dim); font-size: 18px; line-height: 1; padding: 0 4px;
+}
+.card__close:hover { color: var(--text); }
+
+/* ---------- ledger ---------- */
+
+.ledger { margin: 0; }
+.ledger__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  margin-bottom: 4px;
+  background: var(--card);
+  border-radius: 6px;
+}
+.ledger__row dt, .ledger__row dd { margin: 0; }
+.ledger__row dd { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ledger__row--total {
+  background: var(--ok-deep);
+  color: #eafff5;
+  margin-bottom: 0;
+}
+.ledger__row--total dt { font-weight: 700; }
+
+/* ---------- fields ---------- */
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin: 0;
+}
+
+.select {
+  width: 100%;
+  padding: 10px;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+}
+
+#authCard input.select { margin-bottom: 8px; }
+#authCard .btn { margin-bottom: 8px; }
+#authCard .btn:last-child { margin-bottom: 0; }
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.check input { accent-color: var(--ok); }
+
+/* ---------- stats ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.stat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 4px;
+  text-align: center;
+}
+.stat b {
+  display: block;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.stat span {
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.track {
+  height: 5px;
+  background: var(--card);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ok);
+  transition: width .3s ease;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  padding: 10px 12px;
+  transition: background .15s ease, border-color .15s ease;
+}
+.btn:hover:not(:disabled) { background: #253044; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn:focus-visible { outline: 2px solid var(--ok); outline-offset: 2px; }
+
+.btn--block { width: 100%; }
+.btn--ghost { background: transparent; }
+
+.btn--go {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #04231a;
+  font-weight: 700;
+}
+.btn--go:hover:not(:disabled) { background: #17b972; }
+
+.btn--stop {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #fff;
+}
+.btn--stop:hover:not(:disabled) { background: #a80e20; }
+
+.btn--quiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--dim);
+  font-weight: 500;
+}
+.btn--quiet:hover { color: var(--text); background: var(--card); }
+
+.btn--chip { padding: 8px 4px; font-size: 11px; }
+.btn--chip.is-ok  { background: var(--ok-deep);  border-color: var(--ok-deep);  color: #9df5cc; }
+.btn--chip.is-bad { background: var(--bad-deep); border-color: var(--bad-deep); color: #ffb3bc; }
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* ---------- live call ---------- */
+
+.live__name {
+  margin: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+.live__num {
+  margin: 2px 0 10px;
+  text-align: center;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  color: var(--info);
+}
+.live__bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 10px;
+  margin-bottom: 12px;
+  background: var(--card);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--ok-deep);
+  color: #9df5cc;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  min-height: 15px;
+  word-break: break-word;
+}
+
+/* ---------- semantic colours ---------- */
+
+.is-ok   { color: var(--ok); }
+.is-bad  { color: var(--bad); }
+.is-warn { color: var(--warn); }
+.is-info { color: var(--info); }
+.is-vm   { color: var(--vm); }
+.is-accent { color: var(--ok); }
+
+@media (prefers-reduced-motion: reduce) {
+  .track i, .btn { transition: none; }
+}

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Dialer</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <main class="panel">
+
+    <!-- Auth gate: shown until the server confirms an active, approved
+         account logged in from this device. Everything else stays
+         hidden until then. -->
+    <section class="card card--accent" id="authCard">
+      <header class="card__head">
+        <h2 class="is-accent" id="authTitle">Log in</h2>
+        <button type="button" class="card__close" id="authToggle" aria-label="Switch form" title="Switch form">⇄</button>
+      </header>
+      <p class="hint" id="authStatus">Checking your session…</p>
+
+      <div id="loginFields">
+        <input type="text" id="loginUsername" class="select" placeholder="Username" autocomplete="username">
+        <input type="password" id="loginPassword" class="select" placeholder="Password" autocomplete="current-password">
+        <button type="button" class="btn btn--go btn--block" id="loginBtn">Log in</button>
+      </div>
+
+      <div id="registerFields" hidden>
+        <input type="text" id="regUsername" class="select" placeholder="Choose a username" autocomplete="username">
+        <input type="email" id="regEmail" class="select" placeholder="Email (optional)" autocomplete="email">
+        <input type="password" id="regPassword" class="select" placeholder="Choose a password (6+ characters)" autocomplete="new-password">
+        <button type="button" class="btn btn--go btn--block" id="registerBtn">Register — wait for approval</button>
+        <button type="button" class="btn btn--ghost btn--block" id="trialBtn">Start free 1-hour trial instead</button>
+      </div>
+    </section>
+
+    <div id="appBody" hidden>
+
+      <!-- Signed-in account summary -->
+      <section class="card">
+        <header class="card__head">
+          <h2>Account</h2>
+          <span class="card__meta is-ok" id="acctPlan">—</span>
+        </header>
+        <p class="hint" id="acctExpiry"></p>
+      </section>
+
+    <!-- Import -->
+    <section class="card">
+      <header class="card__head">
+        <h2>Import leads</h2>
+        <span class="card__meta">CSV / XLSX</span>
+      </header>
+      <button type="button" class="btn btn--ghost btn--block" id="uploadBtn">
+        Upload contacts
+      </button>
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+    </section>
+
+    <!-- Import summary -->
+    <section class="card card--accent" id="summaryCard" hidden>
+      <header class="card__head">
+        <h2 class="is-accent">Import summary</h2>
+        <button type="button" class="card__close" id="dismissSummary" aria-label="Dismiss summary">&times;</button>
+      </header>
+      <dl class="ledger">
+        <div class="ledger__row"><dt>Total contacts</dt><dd id="sumTotal">0</dd></div>
+        <div class="ledger__row"><dt class="is-ok">Valid contacts</dt><dd class="is-ok" id="sumValid">0</dd></div>
+        <div class="ledger__row"><dt class="is-bad">Invalid contacts</dt><dd class="is-bad" id="sumInvalid">0</dd></div>
+        <div class="ledger__row"><dt class="is-warn">Duplicate contacts</dt><dd class="is-warn" id="sumDupe">0</dd></div>
+        <div class="ledger__row"><dt class="is-warn">Suppressed (DNC)</dt><dd class="is-warn" id="sumSuppressed">0</dd></div>
+        <div class="ledger__row ledger__row--total"><dt>Ready to dial</dt><dd id="sumReady">0</dd></div>
+      </dl>
+    </section>
+
+    <!-- Settings -->
+    <section class="field">
+      <label class="field__label" for="delaySelect">Dial delay settings</label>
+      <select id="delaySelect" class="select">
+        <option value="0">No delay</option>
+        <option value="3">3 seconds</option>
+        <option value="5" selected>5 seconds</option>
+        <option value="10">10 seconds</option>
+        <option value="15">15 seconds</option>
+        <option value="30">30 seconds</option>
+        <option value="60">60 seconds</option>
+      </select>
+      <label class="check">
+        <input type="checkbox" id="windowToggle" checked>
+        <span>Skip contacts outside 8am–9pm local time</span>
+      </label>
+    </section>
+
+    <!-- Live stats -->
+    <section class="stats" aria-live="polite">
+      <div class="stat"><b id="stTotal">0</b><span>Total</span></div>
+      <div class="stat"><b class="is-ok" id="stCompleted">0</b><span>Completed</span></div>
+      <div class="stat"><b class="is-warn" id="stReady">0</b><span>Ready to dial</span></div>
+      <div class="stat"><b class="is-info" id="stAnswered">0</b><span>Answered</span></div>
+      <div class="stat"><b class="is-vm" id="stVoicemail">0</b><span>Voicemail</span></div>
+      <div class="stat"><b class="is-bad" id="stFailed">0</b><span>Failed</span></div>
+    </section>
+
+    <div class="track"><i id="progressBar"></i></div>
+
+    <!-- Primary action -->
+    <button type="button" class="btn btn--go btn--block" id="primaryBtn">Start dialing</button>
+    <p class="hint" id="statusLine">Waiting for a Google Voice tab.</p>
+
+    <!-- Active call -->
+    <section class="card card--live" id="liveCard" hidden>
+      <header class="card__head">
+        <h2 class="is-info">Now calling</h2>
+        <span class="card__meta is-warn" id="livePosition">Contact 0 of 0</span>
+      </header>
+      <p class="live__name" id="liveName">—</p>
+      <p class="live__num" id="liveNumber"></p>
+      <div class="live__bar">
+        <span class="is-ok" id="liveTimer">In call: 0s</span>
+        <span class="is-info" id="liveBadge">Active call</span>
+      </div>
+
+      <p class="field__label">Select outcome</p>
+      <div class="grid3" id="outcomeGrid">
+        <button type="button" class="btn btn--chip" data-outcome="Answered">Answered</button>
+        <button type="button" class="btn btn--chip" data-outcome="Voicemail">Voicemail</button>
+        <button type="button" class="btn btn--chip" data-outcome="Busy">Busy</button>
+        <button type="button" class="btn btn--chip" data-outcome="No Answer">No answer</button>
+        <button type="button" class="btn btn--chip" data-outcome="Wrong Number">Wrong no.</button>
+        <button type="button" class="btn btn--chip" data-outcome="Disconnected">Disconn.</button>
+        <button type="button" class="btn btn--chip" data-outcome="Callback">Callback</button>
+        <button type="button" class="btn btn--chip is-ok" data-outcome="Interested">Interested</button>
+        <button type="button" class="btn btn--chip is-bad" data-outcome="Not Interested">Not int.</button>
+      </div>
+      <button type="button" class="btn btn--ghost btn--block" id="hangupBtn">End call</button>
+    </section>
+
+    <!-- Done -->
+    <section class="card card--done" id="doneCard" hidden>
+      <header class="card__head">
+        <h2 class="is-ok">Dialing completed</h2>
+        <span class="pill">Finished</span>
+      </header>
+      <p class="hint">All contacts in this campaign batch have been processed.</p>
+      <div class="stats stats--3">
+        <div class="stat"><b id="dnTotal">0</b><span>Total</span></div>
+        <div class="stat"><b class="is-info" id="dnAnswered">0</b><span>Answered</span></div>
+        <div class="stat"><b class="is-vm" id="dnVoicemail">0</b><span>Voicemail</span></div>
+      </div>
+    </section>
+
+    <button type="button" class="btn btn--go btn--block" id="downloadBtn" hidden>
+      Download report (.xlsx)
+    </button>
+    <button type="button" class="btn btn--quiet btn--block" id="resetBtn">Clear campaign</button>
+    <button type="button" class="btn btn--quiet btn--block" id="logoutBtn">Log out (frees this device)</button>
+
+    </div>
+  </main>
+
+  <!-- SheetJS must be a classic script; it attaches window.XLSX. -->
+  <script src="../lib/xlsx.full.min.js"></script>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
