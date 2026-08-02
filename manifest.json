@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "GV Auto Dialer by Indus Web Agency",
-  "version": "0.2.0",
-  "description": "Google Voice auto dialer by Indus Web Agency — import leads, auto-dial, tag outcomes, export XLSX. Support: WhatsApp +92 307 9670503.",
+  "version": "0.2.1",
+  "description": "Google Voice auto dialer by Indus Web Agency — import leads, auto-dial, tag outcomes, export XLSX. WhatsApp +92 307 9670503.",
 
   "permissions": ["sidePanel", "storage", "alarms"],
   "host_permissions": ["https://voice.google.com/*", "https://gv-auto-dialer-accounts.vercel.app/*"],
