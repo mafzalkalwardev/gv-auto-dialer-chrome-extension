@@ -52,24 +52,25 @@ In the Developer Dashboard → **New item** → upload the zip, then fill in:
 ### Suggested store description (paste / edit)
 
 ```
-GV Auto Dialer by Indus Web Agency — a queue-based outbound dialer for Google Voice.
+GV Auto Dialer by Indus Web Agency is a queue-based outbound dialer for Google Voice.
 
 Import a CSV or Excel lead list, auto-dial contacts with a configurable delay, tag each call outcome, and export an XLSX call report — all from a Chrome side panel while you work in voice.google.com.
 
-Made by Indus Web Agency (induswebagency.com). Perfect for sales teams, agencies, and solo dialers who already use Google Voice.
+Made by Indus Web Agency (https://www.induswebagency.com). Built for sales teams, agencies, and solo dialers who already use Google Voice and need a simple call queue.
 
 Getting started:
-• Add to Chrome and open Google Voice (voice.google.com)
-• Open the extension side panel
-• Start a free 1-hour trial, or register and wait for approval
-• Upload leads and start dialing
+1. Add to Chrome and open Google Voice (voice.google.com)
+2. Open the extension side panel
+3. Start a free 1-hour trial, or register and wait for approval
+4. Upload leads and start dialing
 
 Access is subscription-based (trial, then plans from 1 day to 1 year). Contact Indus Web Agency to activate a paid plan. Each account works on one computer at a time.
 
-Support: WhatsApp +92 307 9670503 · https://www.induswebagency.com
-
-Keywords: Google Voice auto dialer, Indus Web Agency, outbound call queue, sales dialer, Google Voice dialer, lead calling, call report.
+Support: WhatsApp +92 307 9670503
+Website: https://www.induswebagency.com
 ```
+
+**Do not** add a “Keywords:” line or comma-separated keyword lists — Chrome rejects that as keyword spam.
 
 ### Other listing fields
 
