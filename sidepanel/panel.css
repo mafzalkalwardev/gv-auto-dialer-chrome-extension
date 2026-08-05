@@ -103,21 +103,14 @@ html, body {
   flex-wrap: wrap;
   margin-bottom: 4px;
 }
-.madeby__links a,
-.madeby__phone {
+.madeby__links a {
   color: var(--info);
   text-decoration: none;
   font-size: 11px;
   font-weight: 600;
 }
-.madeby__links a:hover,
-.madeby__phone:hover { text-decoration: underline; color: #7ec4ff; }
+.madeby__links a:hover { text-decoration: underline; color: #7ec4ff; }
 .madeby__sep { color: var(--dim); }
-.madeby__phone {
-  display: inline-block;
-  font-family: "Roboto Mono", ui-monospace, monospace;
-  letter-spacing: .02em;
-}
 
 /* #appBody wraps everything below the license gate; it needs the same
    flex layout as .panel or its children lose their spacing. */
