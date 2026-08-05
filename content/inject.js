@@ -25,17 +25,40 @@
 
   /* ================= messaging ================= */
 
+  function extensionAlive() {
+    try {
+      return Boolean(chrome.runtime?.id);
+    } catch (_) {
+      return false;
+    }
+  }
+
   function connect() {
-    port = chrome.runtime.connect({ name: 'gv-content' });
-    port.onMessage.addListener(handleCommand);
-    port.onDisconnect.addListener(() => {
-      port = null;
-      setTimeout(connect, 1000); // service worker recycled; reattach
-    });
+    // After an extension reload, old content scripts keep running but their
+    // chrome.runtime binding is dead ("Extension context invalidated").
+    if (!extensionAlive()) {
+      stopWatching();
+      return;
+    }
+    try {
+      port = chrome.runtime.connect({ name: 'gv-content' });
+      port.onMessage.addListener(handleCommand);
+      port.onDisconnect.addListener(() => {
+        port = null;
+        if (!extensionAlive()) {
+          stopWatching();
+          return;
+        }
+        setTimeout(connect, 1000); // service worker recycled; reattach
+      });
+    } catch (_) {
+      stopWatching();
+    }
   }
 
   function send(type, payload = {}) {
-    try { port?.postMessage({ type, payload }); } catch (_) {}
+    if (!extensionAlive() || !port) return;
+    try { port.postMessage({ type, payload }); } catch (_) {}
   }
 
   async function handleCommand({ type, payload }) {
