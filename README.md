@@ -1,18 +1,68 @@
-# GV Auto Dialer — by Indus Web Agency
+<div align="center">
 
-Chrome MV3 extension that turns [Google Voice](https://voice.google.com) into a **queue-based outbound dialer**: import leads, auto-dial with a delay, tag outcomes, export an XLSX call report. Includes a **subscription gate** (trial + admin-approved plans) with **one device per account**.
+# GV Auto Dialer Chrome Extension
 
-**Made by [Indus Web Agency](https://www.induswebagency.com)**  
-**WhatsApp support:** [+92 307 9670503](https://wa.me/923079670503)
+<img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=28&duration=2800&pause=700&color=0EA5E9&center=true&vCenter=true&width=900&lines=Google+Voice+Queue+Dialer;Chrome+MV3+Extension;Trial+%2B+Subscription+Ready;Built+by+Indus+Web+Agency" alt="Typing SVG" />
 
-| | |
-|---|---|
-| **Website** | [induswebagency.com](https://www.induswebagency.com) |
-| **Accounts API** | [gv-auto-dialer-accounts.vercel.app](https://gv-auto-dialer-accounts.vercel.app) |
-| **Admin** | [/admin](https://gv-auto-dialer-accounts.vercel.app/admin) |
-| **Privacy** | [/privacy](https://gv-auto-dialer-accounts.vercel.app/privacy) |
+<p>
+  <img src="https://komarev.com/ghpvc/?username=mafzalkalwardev&label=Project%20Views&color=0ea5e9&style=for-the-badge" alt="Project views" />
+  <img src="https://img.shields.io/github/stars/mafzalkalwardev/gv-auto-dialer-chrome-extension?style=for-the-badge&color=22c55e" alt="GitHub stars" />
+  <img src="https://img.shields.io/github/forks/mafzalkalwardev/gv-auto-dialer-chrome-extension?style=for-the-badge&color=f59e0b" alt="GitHub forks" />
+  <img src="https://img.shields.io/github/license/mafzalkalwardev/gv-auto-dialer-chrome-extension?style=for-the-badge&color=64748b" alt="License" />
+</p>
 
-No build step. Load unpacked to develop, or publish to the Chrome Web Store for clients.
+<p>
+  <img src="https://skillicons.dev/icons?i=js,chrome,html,css" alt="Skill icons" />
+</p>
+
+<p>
+  <strong>GV Auto Dialer by Indus Web Agency — Google Voice queue dialer with trial/subscription flows as a Manifest V3 Chrome extension.</strong>
+</p>
+
+</div>
+
+---
+
+## Trophy Cards
+
+<div align="center">
+  <img src="https://github-profile-trophy.vercel.app/?username=mafzalkalwardev&theme=algolia&no-frame=true&no-bg=true&margin-w=12&margin-h=12&column=4" alt="GitHub trophy cards" />
+</div>
+
+---
+
+## Stats Cards
+
+<div align="center">
+  <img height="165" src="https://github-readme-stats-sigma-five.vercel.app/api?username=mafzalkalwardev&show_icons=true&theme=tokyonight&hide_border=true&rank_icon=github" alt="GitHub stats" />
+  <img height="165" src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=mafzalkalwardev&layout=compact&theme=tokyonight&hide_border=true" alt="Top languages" />
+</div>
+
+---
+
+## Activity Graph
+
+<div align="center">
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=mafzalkalwardev&theme=react-dark&hide_border=true&area=true" alt="GitHub activity graph" />
+</div>
+
+---
+
+## Contribution Snake
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mafzalkalwardev/google-voice-dispatch-agent/output/github-contribution-grid-snake-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/mafzalkalwardev/google-voice-dispatch-agent/output/github-contribution-grid-snake.svg">
+    <img alt="Contribution snake" src="https://raw.githubusercontent.com/mafzalkalwardev/google-voice-dispatch-agent/output/github-contribution-grid-snake.svg">
+  </picture>
+</div>
+
+---
+
+## SEO Keywords
+
+`Google Voice dialer` `Chrome MV3` `queue dialer`
 
 ---
 
